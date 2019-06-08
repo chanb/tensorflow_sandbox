@@ -46,7 +46,8 @@ class Conv2D():
         
     def __call__(self, x):
         """
-        Expect x to be shape of (N, H, W, C)
+        Expect x to be shape of (N, H_in, W_in, C_in)
+        Output: (N, H_out, W_out, C_out)
         """
         conv = tf.nn.conv2d(x, self._W, self._stride, self._padding)
 

@@ -4,6 +4,7 @@ import tensorflow.keras.datasets.mnist as mnist
 from datetime import datetime
 
 from models.fully_connected_classifier import FullyConnectedClassifier
+from models.cnn_classifier import CNNClassifier
 
 data_path = "/Users/bryan/Documents/sandbox/data/mnist.npz"
 debug = True
@@ -28,17 +29,22 @@ validation_y = train_y[valid_idx]
 train_x = train_x[train_idx]
 train_y = train_y[train_idx]
 
-height, width = train_x.shape[1:]
+train_x = np.expand_dims(train_x, axis=1).transpose(0, 2, 3, 1)
+
+validation_x = np.expand_dims(validation_x, axis=1).transpose(0, 2, 3, 1)
+
+height, width = train_x.shape[1:3]
 hidden_output_sizes = [100]
 output_size = 10
 
 tf.reset_default_graph()
 
 with tf.name_scope("placeholders"):
-    x = tf.placeholder(tf.float32, (None, height, width))
-    y = tf.placeholder(tf.int64, (None,))
+    x = tf.placeholder(tf.float32, (len(train_x), height, width, 1))
+    y = tf.placeholder(tf.int64, (len(train_y),))
 
-model = FullyConnectedClassifier(input_size=(height * width), output_size=10, hidden_sizes=hidden_output_sizes)
+# model = FullyConnectedClassifier(input_size=(height * width), output_size=10, hidden_sizes=hidden_output_sizes)
+model = CNNClassifier(height=28, width=28, num_channels=1, num_filters=128, output_size=10, hidden_sizes=[128])
 
 logits = model(x)
 loss = tf.losses.sparse_softmax_cross_entropy(y, logits)
