@@ -7,7 +7,7 @@ class CNNClassifier():
     """
     A CNN Classifier. Accepts input dimension (N x H x W x C)
     """
-    def __init__(self, height, width, num_channels, num_filters, output_size, filter_size=(5, 5), stride=(1, 1), padding="VALID", 
+    def __init__(self, height, width, num_channels, num_filters, output_size, filter_size=(5, 5), stride=(1, 1), 
                     hidden_sizes=None, activation=tf.nn.relu, dropout=0.0):
         self._dropout = dropout
 
