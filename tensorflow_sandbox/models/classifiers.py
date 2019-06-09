@@ -140,6 +140,7 @@ class FullyConnectedClassifier():
             x = layer(x)
             x = tf.nn.dropout(x, rate=self._dropout)
 
+        # x = tf.Print(x, [x], "Output: ")
         return x
 
     def _get_parameters(self):
