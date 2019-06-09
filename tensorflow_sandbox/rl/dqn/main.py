@@ -99,4 +99,5 @@ if __name__ == "__main__":
           update_timestep=10000,
           batch_size=10000,
           max_transitions=100000,
+          eps=0.9,
           history_length=4)

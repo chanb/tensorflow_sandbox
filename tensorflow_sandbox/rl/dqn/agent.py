@@ -7,7 +7,7 @@ from tensorflow_sandbox.models.q_functions import FullyConnectedQFunction
 class Agent():
     def __init__(self, sess, action_dim, state_dim, replay_buffer,
                  discount=0.99, lr=3e-4, eps=0.1, hidden_sizes=[128],
-                 train_writer=None):
+                 eps_decay=0.9999, train_writer=None):
         self._sess = sess
         self._replay_buffer = replay_buffer
         self._train_writer = train_writer
@@ -18,6 +18,7 @@ class Agent():
         self._eps = eps
         self._hidden_sizes = hidden_sizes
         self._input_dim = [None]
+        self._eps_decay = eps_decay
         for dim in state_dim:
             self._input_dim.append(dim)
 
@@ -105,6 +106,8 @@ class Agent():
             feed_dict={self._state_input: s,
                        self._target_q_in: target,
                        self._action: a})
+
+        self._eps = np.max((0.1, self._eps * self._eps_decay))
 
         if self._train_writer:
             self._train_writer.add_summary(train_summary, update_num)
