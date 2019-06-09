@@ -1,7 +1,9 @@
 import argparse
 import numpy as np
+import os
 import tensorflow as tf
 import tensorflow.keras.datasets.mnist as mnist
+
 from datetime import datetime
 
 from models.classifiers import CNNClassifier, FullyConnectedClassifier
@@ -61,10 +63,8 @@ def train(data_path, validation_ratio, lr, epochs, dropout, l2_coef,
     logits = model(x)
     predictions = tf.argmax(logits, 1)
 
-    model_weights, _ = model.parameters
-
     loss = tf.losses.sparse_softmax_cross_entropy(y, logits)
-    for weight in model_weights:
+    for weight in model.weights.values():
         loss += l2_coef * tf.nn.l2_loss(weight)
 
     accuracy = tf.reduce_mean(tf.cast(tf.equal(y, predictions), tf.float32))
@@ -119,7 +119,7 @@ def train(data_path, validation_ratio, lr, epochs, dropout, l2_coef,
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--data_path', type=str,
-                        default="./data/mnist.npz",
+                        default=os.path.join(os.getcwd(), "data/mnist.npz"),
                         help='The location of the data file')
     parser.add_argument('--validation_ratio', type=float, default=0.2,
                         help='Train validation split ratio')
@@ -132,7 +132,8 @@ if __name__ == "__main__":
     parser.add_argument('--l2_coef', type=float, default=0.1,
                         help='The coefficient for L2 regularization')
     parser.add_argument('--model_path', type=str,
-                        default="./saved_models/default.ckpt",
+                        default=os.path.join(os.getcwd(),
+                                             "saved_models/default.ckpt"),
                         help='The path to save the model')
     parser.add_argument('--debug', action='store_true',
                         help='Debug mode')

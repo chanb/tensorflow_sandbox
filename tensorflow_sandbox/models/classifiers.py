@@ -1,7 +1,7 @@
 import numpy as np
 import tensorflow as tf
 
-from layers import Conv2D, Flatten, FullyConnectedLayer
+from tensorflow_sandbox.layers import Conv2D, Flatten, FullyConnectedLayer
 
 
 class CNNClassifier():
@@ -11,7 +11,7 @@ class CNNClassifier():
     def __init__(self, height, width, input_channels, latent_size,
                  output_size, filter_size=(5, 5), stride=(1, 1),
                  filter_channels=None, hidden_sizes=None,
-                 activation=tf.nn.relu, dropout=0.0):
+                 activation=tf.nn.relu, dropout=0.0, name="cnn_classifier"):
         self._dropout = dropout
 
         self._conv_layers = []
@@ -24,7 +24,8 @@ class CNNClassifier():
         for i in range(len(conv_channels) - 1):
             self._conv_layers.append(
                 Conv2D(conv_channels[i], conv_channels[i + 1], filter_size,
-                       stride, ctivation=activation, name="conv{}".format(i)))
+                       stride, activation=activation, name="{}_conv_{}"
+                       .format(name, i)))
 
             height = \
                 int(np.floor(1 + float(height - (filter_size[0] - 1) - 1) /
@@ -48,14 +49,16 @@ class CNNClassifier():
                     FullyConnectedLayer(input_size=layer_dimensions[i],
                                         output_size=layer_dimensions[i + 1],
                                         activation=None,
-                                        name="fully_connected_{}".format(i)))
+                                        name="{}_fully_connected_{}"
+                                        .format(name, i)))
                 continue
 
             self._fc_layers.append(
                 FullyConnectedLayer(input_size=layer_dimensions[i],
                                     output_size=layer_dimensions[i + 1],
                                     activation=activation,
-                                    name="fully_connected_{}".format(i)))
+                                    name="{}_fully_connected_{}"
+                                    .format(name, i)))
 
         self._get_parameters()
 
@@ -73,26 +76,37 @@ class CNNClassifier():
         return x
 
     def _get_parameters(self):
-        self._weights = []
-        self._biases = []
-        for layer in self._conv_layers:
-            self._weights.append(layer.weights)
-            self._biases.append(layer.bias)
+        self._weights = dict()
+        self._biases = dict()
 
-        for layer in self._fc_layers:
-            self._weights.append(layer.weights)
-            self._biases.append(layer.bias)
+        for i, layer in enumerate(self._conv_layers):
+            self._weights['conv_W_{}'.format(i)] = layer.weights
+            self._biases['conv_b_{}'.format(i)] = layer.bias
+
+        for i, layer in enumerate(self._conv_layers):
+            self._weights['fc_W_{}'.format(i)] = layer.weights
+            self._biases['fc_b_{}'.format(i)] = layer.bias
+
+        self._parameters = {**self._weights, **self._biases}
+
+    @property
+    def weights(self):
+        return self._weights
+
+    @property
+    def biases(self):
+        return self._biases
 
     @property
     def parameters(self):
-        return self._weights, self._biases
+        return self._parameters
 
 
 class FullyConnectedClassifier():
     def __init__(self, input_size, output_size, hidden_sizes=None,
-                 activation=tf.nn.relu, dropout=0.0):
+                 activation=tf.nn.relu, dropout=0.0, name="fc_classifier"):
         self._dropout = dropout
-        self._flatten = flatten()
+        self._flatten = Flatten()
 
         layer_dimensions = [input_size]
         if hidden_sizes:
@@ -107,14 +121,16 @@ class FullyConnectedClassifier():
                     FullyConnectedLayer(input_size=layer_dimensions[i],
                                         output_size=layer_dimensions[i + 1],
                                         activation=None,
-                                        name="fully_connected_{}".format(i)))
+                                        name="{}_fully_connected_{}"
+                                        .format(name, i)))
                 continue
 
             self._layers.append(
                 FullyConnectedLayer(input_size=layer_dimensions[i],
                                     output_size=layer_dimensions[i + 1],
                                     activation=activation,
-                                    name="fully_connected_{}".format(i)))
+                                    name="{}_fully_connected_{}"
+                                    .format(name, i)))
 
         self._get_parameters()
 
@@ -127,13 +143,23 @@ class FullyConnectedClassifier():
         return x
 
     def _get_parameters(self):
-        self._weights = []
-        self._biases = []
+        self._weights = dict()
+        self._biases = dict()
 
-        for layer in self._layers:
-            self._weights.append(layer.weights)
-            self._biases.append(layer.bias)
+        for i, layer in enumerate(self._layers):
+            self._weights['fc_W_{}'.format(i)] = layer.weights
+            self._biases['fc_b_{}'.format(i)] = layer.bias
+
+        self._parameters = {**self._weights, **self._biases}
+
+    @property
+    def weights(self):
+        return self._weights
+
+    @property
+    def biases(self):
+        return self._biases
 
     @property
     def parameters(self):
-        return self._weights, self._biases
+        return self._parameters
