@@ -4,8 +4,7 @@ import tensorflow as tf
 import tensorflow.keras.datasets.mnist as mnist
 from datetime import datetime
 
-from models.fully_connected_classifier import FullyConnectedClassifier
-from models.cnn_classifier import CNNClassifier
+from models import CNNClassifier, FullyConnectedClassifier
 
 
 def get_validation_split_indicies(data_length, val_ratio=0.2):
