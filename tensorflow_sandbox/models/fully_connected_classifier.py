@@ -23,6 +23,8 @@ class FullyConnectedClassifier():
             self._layers.append(FullyConnectedLayer(input_size=layer_dimensions[i], 
                                 output_size=layer_dimensions[i + 1], activation=activation, name="fully_connected_{}".format(i)))
 
+        self._get_parameters()
+
     def __call__(self, x):
         x = self._flatten(x)
         for layer in self._layers:

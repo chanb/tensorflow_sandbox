@@ -29,7 +29,7 @@ def get_mnist_data(data_path, validation_ratio):
 
     return train_x, train_y, validation_x, validation_y, test_x, test_y
 
-def train(data_path, validation_ratio, lr, epochs, dropout, l2_coef, debug):
+def train(data_path, validation_ratio, lr, epochs, dropout, l2_coef, model_path, debug):
     train_x, train_y, validation_x, validation_y, test_x, test_y = get_mnist_data(data_path, validation_ratio)
     height, width = train_x.shape[1:3]
 
@@ -55,7 +55,7 @@ def train(data_path, validation_ratio, lr, epochs, dropout, l2_coef, debug):
     loss = tf.losses.sparse_softmax_cross_entropy(y, logits)
     for weight in model_weights:
         loss += l2_coef * tf.nn.l2_loss(weight)
-        
+
     accuracy = tf.reduce_mean(tf.cast(tf.equal(y, predictions), tf.float32))
     opt = tf.train.AdamOptimizer(lr).minimize(loss)
 
@@ -64,6 +64,8 @@ def train(data_path, validation_ratio, lr, epochs, dropout, l2_coef, debug):
         tf.summary.scalar("accuracy", accuracy)
         merged = tf.summary.merge_all()
 
+    saver = tf.train.Saver()
+    prev_best = None
     with tf.Session() as sess:
         if not debug:
             start_time = datetime.now().strftime("%m-%d-%Y_%H-%M-%S")
@@ -78,11 +80,14 @@ def train(data_path, validation_ratio, lr, epochs, dropout, l2_coef, debug):
                 
                 validation_summary, validation_loss, validation_accuracy = sess.run([merged, loss, accuracy], feed_dict={x: validation_x, y: validation_y})
                 validation_writer.add_summary(validation_summary, epoch)
+
+                if not prev_best or validation_loss < prev_best:
+                    save_path = saver.save(sess, model_path)
             else:
                 _, train_loss, train_accuracy = sess.run([opt, loss, accuracy], feed_dict={x: train_x, y: train_y})
                 validation_loss, validation_accuracy = sess.run([loss, accuracy], feed_dict={x: validation_x, y: validation_y})
 
-            if (epoch + 1) % 10 == 0:
+            if (epoch + 1) % 1 == 0:
                 print("Epoch: {} ==================".format(epoch + 1))
                 print("Training - Loss: {}, Accuracy: {}".format(train_loss, train_accuracy))
                 print("Validation - Loss: {}, Accuracy: {}".format(validation_loss, validation_accuracy))
@@ -101,6 +106,7 @@ if __name__ == "__main__":
                         help='The dropout rate')
     parser.add_argument('--l2_coef', type=float, default=0.1,
                         help='The coefficient for L2 regularization')
+    parser.add_argument('--model_path', type=str, default="/Users/bryan/Documents/sandbox/saved_models/default.ckpt")
     parser.add_argument('--debug', action='store_true', 
                         help='Debug mode')
     args = parser.parse_args()
