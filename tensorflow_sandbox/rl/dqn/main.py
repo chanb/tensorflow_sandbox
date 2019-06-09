@@ -10,7 +10,8 @@ from replay_buffer import ReplayBuffer
 
 
 def train(cache_dir, model_path, max_timesteps=1000, lr=3e-4, discount=0.55,
-          eps=0.1, update_timestep=400, batch_size=128, history_length=1):
+          eps=0.1, update_timestep=400, batch_size=128, max_transitions=100000,
+          history_length=1):
     start_time = datetime.now().strftime("%m-%d-%Y_%H-%M-%S")
     env = gym.make('MountainCar-v0')
     curr_episode = 1
@@ -28,6 +29,7 @@ def train(cache_dir, model_path, max_timesteps=1000, lr=3e-4, discount=0.55,
         replay_buffer = ReplayBuffer(cache_dir,
                                      state_dim=state.shape,
                                      batch_size=batch_size,
+                                     max_transitions=max_transitions,
                                      start_time=start_time)
         agent = Agent(sess=sess, action_dim=3, state_dim=state.shape,
                       replay_buffer=replay_buffer,
@@ -90,10 +92,11 @@ def run():
 if __name__ == "__main__":
     # run()
     cache_dir = os.path.join(os.getcwd(), "data")
-    model_path = os.path.join(os.getcwd(), "saved_models")
+    model_path = os.path.join(os.getcwd(), "saved_models/tmp")
     train(cache_dir,
           model_path,
           max_timesteps=1000000,
           update_timestep=10000,
           batch_size=10000,
+          max_transitions=100000,
           history_length=4)
