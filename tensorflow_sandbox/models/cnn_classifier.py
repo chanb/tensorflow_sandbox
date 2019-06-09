@@ -7,8 +7,9 @@ class CNNClassifier():
     """
     A CNN Classifier. Accepts input dimension (N x H x W x C)
     """
-    def __init__(self, height, width, input_channels, latent_size, output_size, filter_size=(5, 5), stride=(1, 1), filter_channels=None, 
-                    hidden_sizes=None, activation=tf.nn.relu, dropout=0.0):
+    def __init__(self, height, width, input_channels, latent_size, output_size, filter_size=(5, 5), 
+                    stride=(1, 1), filter_channels=None, hidden_sizes=None, activation=tf.nn.relu, 
+                    dropout=0.0):
         self._dropout = dropout
 
         self._conv_layers = []
@@ -19,7 +20,8 @@ class CNNClassifier():
         conv_channels.append(latent_size)
 
         for i in range(len(conv_channels) - 1):
-            self._conv_layers.append(Conv2D(conv_channels[i], conv_channels[i + 1], filter_size, stride, activation=activation, name="conv{}".format(i)))
+            self._conv_layers.append(Conv2D(conv_channels[i], conv_channels[i + 1], filter_size, stride, 
+                                            activation=activation, name="conv{}".format(i)))
             height = int(np.floor(1 + float(height - (filter_size[0] - 1) - 1) / float(stride[0])))
             width = int(np.floor(1 + float(width - (filter_size[1] - 1) - 1) / float(stride[1])))
 
@@ -35,11 +37,13 @@ class CNNClassifier():
         for i in range(len(layer_dimensions) - 1):
             if i == len(layer_dimensions) - 2:
                 self._fc_layers.append(FullyConnectedLayer(input_size=layer_dimensions[i], 
-                                    output_size=layer_dimensions[i + 1], activation=None, name="fully_connected_{}".format(i)))
+                                    output_size=layer_dimensions[i + 1], activation=None, 
+                                    name="fully_connected_{}".format(i)))
                 continue
 
             self._fc_layers.append(FullyConnectedLayer(input_size=layer_dimensions[i], 
-                                output_size=layer_dimensions[i + 1], activation=activation, name="fully_connected_{}".format(i)))
+                                output_size=layer_dimensions[i + 1], activation=activation, 
+                                name="fully_connected_{}".format(i)))
 
         self._get_parameters()
 

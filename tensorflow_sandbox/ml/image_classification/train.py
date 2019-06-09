@@ -45,7 +45,8 @@ def train(data_path, validation_ratio, lr, epochs, dropout, l2_coef, model_path,
         y = tf.placeholder(tf.int64, (None,))
 
     # model = FullyConnectedClassifier(input_size=(height * width), output_size=10, hidden_sizes=hidden_output_sizes)
-    model = CNNClassifier(height=28, width=28, input_channels=1, latent_size=latent_size, filter_channels=filter_channels, output_size=output_size, hidden_sizes=hidden_sizes)
+    model = CNNClassifier(height=28, width=28, input_channels=1, latent_size=latent_size, filter_channels=filter_channels, 
+                            output_size=output_size, hidden_sizes=hidden_sizes)
 
     logits = model(x)
     predictions = tf.argmax(logits, 1)
@@ -75,17 +76,21 @@ def train(data_path, validation_ratio, lr, epochs, dropout, l2_coef, model_path,
         sess.run(tf.group(tf.global_variables_initializer(), tf.local_variables_initializer()))
         for epoch in range(epochs):
             if not debug:
-                _, train_summary, train_loss, train_accuracy = sess.run([opt, merged, loss, accuracy], feed_dict={x: train_x, y: train_y})
+                _, train_summary, train_loss, train_accuracy = sess.run([opt, merged, loss, accuracy], 
+                                                                        feed_dict={x: train_x, y: train_y})
                 train_writer.add_summary(train_summary, epoch)
                 
-                validation_summary, validation_loss, validation_accuracy = sess.run([merged, loss, accuracy], feed_dict={x: validation_x, y: validation_y})
+                validation_summary, validation_loss, validation_accuracy = sess.run([merged, loss, accuracy], 
+                                                                                    feed_dict={x: validation_x, y: validation_y})
                 validation_writer.add_summary(validation_summary, epoch)
 
                 if not prev_best or validation_loss < prev_best:
                     save_path = saver.save(sess, model_path)
             else:
-                _, train_loss, train_accuracy = sess.run([opt, loss, accuracy], feed_dict={x: train_x, y: train_y})
-                validation_loss, validation_accuracy = sess.run([loss, accuracy], feed_dict={x: validation_x, y: validation_y})
+                _, train_loss, train_accuracy = sess.run([opt, loss, accuracy], 
+                                                                    feed_dict={x: train_x, y: train_y})
+                validation_loss, validation_accuracy = sess.run([loss, accuracy], 
+                                                                    feed_dict={x: validation_x, y: validation_y})
 
             if (epoch + 1) % 1 == 0:
                 print("Epoch: {} ==================".format(epoch + 1))
@@ -111,4 +116,5 @@ if __name__ == "__main__":
                         help='Debug mode')
     args = parser.parse_args()
 
-    train(args.data_path, args.validation_ratio, args.lr, args.epochs, args.dropout, args.l2_coef, args.debug)
+    train(args.data_path, args.validation_ratio, args.lr, args.epochs, args.dropout, args.l2_coef, 
+            args.model_path, args.debug)

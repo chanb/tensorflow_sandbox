@@ -8,7 +8,8 @@ class FullyConnectedLayer():
             w_init = weight_init if weight_init else tf.contrib.layers.xavier_initializer()
             b_init = bias_init if bias_init else tf.zeros_initializer()
 
-            self._W = tf.get_variable("weight", shape=[input_size, output_size], initializer=w_init, trainable=True)
+            self._W = tf.get_variable("weight", shape=[input_size, output_size], initializer=w_init, 
+                                        trainable=True)
             self._b = tf.get_variable("bias", shape=[output_size, ], initializer=b_init, trainable=True)
             self._activation = activation
 
@@ -36,8 +37,8 @@ class Conv2D():
             w_init = weight_init if weight_init else tf.contrib.layers.variance_scaling_initializer()
             b_init = bias_init if bias_init else tf.zeros_initializer()
 
-            self._W = tf.get_variable("weight", shape=[filter_size[0], filter_size[1], num_channels, num_filters], 
-                                initializer=w_init, trainable=True)
+            self._W = tf.get_variable("weight", shape=[filter_size[0], filter_size[1], num_channels, 
+                                num_filters], initializer=w_init, trainable=True)
             self._b = tf.get_variable("bias", shape=[num_filters], initializer=b_init, trainable=True)
 
             self._stride = [1, stride[0], stride[1], 1]
