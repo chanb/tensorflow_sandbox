@@ -51,7 +51,7 @@ class REINFORCE():
             self._critic_loss = tf.reduce_mean(
                 tf.square(self._returns - self._values))
             self._actor_loss = tf.reduce_mean(
-                -self._log_probs * (self._returns - self._values))
+                self._log_probs * (self._returns - self._values))
             self._entropy_loss = tf.reduce_mean(
                 self._entropies
             )
@@ -83,7 +83,7 @@ class REINFORCE():
         )
 
         print("Loss: {}, Actor Loss: {}, Critic Loss: {}, Entropy: {} Return: {}".format(
-            loss, actor_loss, critic_loss, entropy_loss, returns[0]))
+            loss, actor_loss, critic_loss, entropy_loss, sum(rewards)))
 
 
 if __name__ == "__main__":
@@ -108,7 +108,10 @@ if __name__ == "__main__":
         algo = REINFORCE(sess=sess,
                          agent=agent,
                          storage=storage,
-                         action_dim=action_dim)
+                         action_dim=action_dim,
+                         lr=0.01,
+                         critic_coef=0.7,
+                         ent_coef=0.02)
 
         tf.global_variables_initializer().run()
         for _ in range(num_eps):
