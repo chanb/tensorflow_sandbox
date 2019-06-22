@@ -38,10 +38,9 @@ class FullyConnectedActorCritic():
 
     def __call__(self, x):
         x = self._shared(x)
-        relu = tf.nn.relu(x)
+        x = tf.nn.relu(x)
         logits = self._actor(x)
         val = self._critic(x)
-
         return logits, val
 
 

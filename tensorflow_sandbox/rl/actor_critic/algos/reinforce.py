@@ -5,7 +5,7 @@ import tensorflow as tf
 class REINFORCE():
     def __init__(self, sess, agent, storage, action_dim,
                  discount=0.99, lr=3e-4,
-                 actor_coef=1, critic_coef=0.5, ent_coef=0.02):
+                 actor_coef=1., critic_coef=0.5, ent_coef=0.):
         self._sess = sess
         self._agent = agent
         self._storage = storage
@@ -51,7 +51,7 @@ class REINFORCE():
             self._critic_loss = tf.reduce_mean(
                 tf.square(self._returns - self._values))
             self._actor_loss = tf.reduce_mean(
-                -tf.log(self._log_probs) * (self._returns - self._values))
+                -self._log_probs * (self._returns - self._values))
             self._entropy_loss = tf.reduce_mean(
                 self._entropies
             )
@@ -74,7 +74,7 @@ class REINFORCE():
 
         _, loss, actor_loss, critic_loss, entropy_loss = sess.run(
             [self._opt, self._loss, self._actor_loss, self._critic_loss,
-             self._entropy_loss],
+                self._entropy_loss],
             feed_dict={
                 agent.state_input: states,
                 self._actions_taken: actions,
@@ -92,18 +92,23 @@ if __name__ == "__main__":
     from tensorflow_sandbox.rl.actor_critic.agent import Agent
     from tensorflow_sandbox.rl.actor_critic.storage import Storage
 
-    num_eps = 100
-    env = gym.make('MountainCar-v0')
+    # env_name = "MountainCar-v0"
+    # action_dim = 3
+
+    env_name = "CartPole-v0"
+    action_dim = 2
+    num_eps = 100000
+    env = gym.make(env_name)
     done = False
 
     with tf.Session() as sess:
         storage = Storage()
-        agent = Agent(action_dim=3,
+        agent = Agent(action_dim=action_dim,
                       state_dim=env.observation_space.shape)
         algo = REINFORCE(sess=sess,
                          agent=agent,
                          storage=storage,
-                         action_dim=3)
+                         action_dim=action_dim)
 
         tf.global_variables_initializer().run()
         for _ in range(num_eps):
