@@ -57,7 +57,7 @@ class REINFORCE():
             )
 
             self._loss = self._actor_coef * self._actor_loss + \
-                self._critic_coef * self._critic_loss + \
+                self._critic_coef * self._critic_loss - \
                 self._ent_coef * self._entropy_loss
 
             self._opt = tf.train.AdamOptimizer(self._lr).minimize(self._loss)
@@ -111,7 +111,7 @@ if __name__ == "__main__":
                          action_dim=action_dim,
                          lr=0.01,
                          critic_coef=0.7,
-                         ent_coef=0.02)
+                         ent_coef=0.0002)
 
         tf.global_variables_initializer().run()
         for _ in range(num_eps):
