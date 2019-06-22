@@ -82,8 +82,8 @@ class REINFORCE():
                 }
         )
 
-        print("Loss: {}, Actor Loss: {}, Critic Loss: {}, Entropy: {}".format(
-            loss, actor_loss, critic_loss, entropy_loss))
+        print("Loss: {}, Actor Loss: {}, Critic Loss: {}, Entropy: {} Return: {}".format(
+            loss, actor_loss, critic_loss, entropy_loss, returns[0]))
 
 
 if __name__ == "__main__":
