@@ -43,22 +43,20 @@ class CNNClassifier():
 
         self._fc_layers = []
 
-        for i in range(len(layer_dimensions) - 1):
-            if i == len(layer_dimensions) - 2:
-                self._fc_layers.append(
-                    FullyConnectedLayer(input_size=layer_dimensions[i],
-                                        output_size=layer_dimensions[i + 1],
-                                        activation=None,
-                                        name="{}_fully_connected_{}"
-                                        .format(name, i)))
-                continue
-
-            self._fc_layers.append(
+        for i in range(len(layer_dimensions) - 2):
+            self._layers.append(
                 FullyConnectedLayer(input_size=layer_dimensions[i],
                                     output_size=layer_dimensions[i + 1],
                                     activation=activation,
                                     name="{}_fully_connected_{}"
                                     .format(name, i)))
+
+        self._layers.append(
+            FullyConnectedLayer(input_size=layer_dimensions[-2],
+                                output_size=layer_dimensions[-1],
+                                activation=None,
+                                name="{}_fully_connected_{}"
+                                .format(name, len(layer_dimensions) - 2)))
 
         self._get_parameters()
 
@@ -115,22 +113,20 @@ class FullyConnectedClassifier():
 
         self._layers = []
 
-        for i in range(len(layer_dimensions) - 1):
-            if i == len(layer_dimensions) - 2:
-                self._layers.append(
-                    FullyConnectedLayer(input_size=layer_dimensions[i],
-                                        output_size=layer_dimensions[i + 1],
-                                        activation=None,
-                                        name="{}_fully_connected_{}"
-                                        .format(name, i)))
-                continue
-
+        for i in range(len(layer_dimensions) - 2):
             self._layers.append(
                 FullyConnectedLayer(input_size=layer_dimensions[i],
                                     output_size=layer_dimensions[i + 1],
                                     activation=activation,
                                     name="{}_fully_connected_{}"
                                     .format(name, i)))
+
+        self._layers.append(
+            FullyConnectedLayer(input_size=layer_dimensions[-2],
+                                output_size=layer_dimensions[-1],
+                                activation=None,
+                                name="{}_fully_connected_{}"
+                                .format(name, len(layer_dimensions) - 2)))
 
         self._get_parameters()
 
@@ -140,7 +136,6 @@ class FullyConnectedClassifier():
             x = layer(x)
             x = tf.nn.dropout(x, rate=self._dropout)
 
-        # x = tf.Print(x, [x], "Output: ")
         return x
 
     def _get_parameters(self):

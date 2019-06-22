@@ -9,7 +9,7 @@ from agent import Agent
 from replay_buffer import ReplayBuffer
 
 
-def train(cache_dir, model_path, max_timesteps=1000, lr=3e-4, discount=0.55,
+def train(cache_dir, model_path, max_timesteps=1000, lr=3e-4, discount=0.99,
           eps=0.1, update_timestep=400, batch_size=128, max_transitions=100000,
           history_length=1):
     start_time = datetime.now().strftime("%m-%d-%Y_%H-%M-%S")
@@ -41,6 +41,7 @@ def train(cache_dir, model_path, max_timesteps=1000, lr=3e-4, discount=0.55,
         state = np.vstack((state[1:], obs))
 
         for timestep in range(1, max_timesteps + 1):
+            env.render()
             action = agent.act(np.expand_dims(state, axis=0))
 
             next_obs, reward, done, info = env.step(action)
@@ -95,6 +96,7 @@ if __name__ == "__main__":
     model_path = os.path.join(os.getcwd(), "saved_models/tmp")
     train(cache_dir,
           model_path,
+          discount=1,
           max_timesteps=1000000,
           update_timestep=10000,
           batch_size=10000,
