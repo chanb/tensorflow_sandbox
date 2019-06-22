@@ -6,13 +6,16 @@ from tensorflow_sandbox.models.classifiers import FullyConnectedClassifier
 
 
 class FullyConnectedActorCritic():
-    def __init__(self, input_size, output_size, latent_size, hidden_sizes=None,
-                 actor_hidden_sizes=None, critic_hidden_sizes=None,
-                 activation=tf.nn.relu, name="fc_actor_critic"):
+    def __init__(self, input_size, output_size, latent_size,
+                 shared_hidden_sizes=None,
+                 actor_hidden_sizes=None,
+                 critic_hidden_sizes=None,
+                 activation=tf.nn.relu,
+                 name="fc_actor_critic"):
         self._shared = FullyConnectedClassifier(
             input_size=input_size,
             output_size=latent_size,
-            hidden_sizes=hidden_sizes,
+            hidden_sizes=shared_hidden_sizes,
             activation=activation,
             name="fc_shared_base"
         )

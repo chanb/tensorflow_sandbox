@@ -19,10 +19,9 @@ class Agent():
         self._eps = eps
         self._hidden_sizes = hidden_sizes
         self._input_dim = [None]
+        self._input_dim.extend(state_dim)
         self._eps_decay = eps_decay
         self._eps_decay_threshold = eps_decay_threshold
-        for dim in state_dim:
-            self._input_dim.append(dim)
 
         self._build_dqn()
 
