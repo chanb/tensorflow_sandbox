@@ -6,7 +6,7 @@ import tensorflow as tf
 from datetime import datetime
 
 from agent import Agent
-from replay_buffer import ReplayBuffer
+from tensorflow_sandbox.rl.replay_buffer import ReplayBuffer
 
 
 def train(cache_dir, model_path, max_timesteps=1000, lr=3e-4, discount=0.99,

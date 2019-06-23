@@ -125,7 +125,7 @@ if __name__ == "__main__":
                          agent=agent,
                          storage=storage,
                          max_timesteps=max_timesteps,
-                         lr=0.01,
+                         lr=1e-3,
                          critic_coef=0.7,
                          ent_coef=0.0002)
 
